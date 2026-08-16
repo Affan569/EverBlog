@@ -9,7 +9,7 @@ import AdSlotInArticle from '@/components/ads/AdSlotInArticle'
 import { getPostBySlug, getRelatedPosts } from '@/lib/firebase-helpers'
 import type { BlogPost } from '@/types'
 import { createMetadata } from '@/lib/metadata'
-import '../../../styles/blog-content.css'
+import '@/styles/blog-content.css'
 
 interface BlogPostPageProps {
   params: { slug: string }
