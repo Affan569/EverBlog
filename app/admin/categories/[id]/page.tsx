@@ -1,12 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { getCategoryById, updateCategory } from '@/lib/firebase-helpers'
 import type { Category } from '@/types'
 
 export default function EditCategory() {
   const router = useRouter()
+  const params = useParams()
+  const id = params.id as string
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [category, setCategory] = useState<Category | null>(null)
@@ -25,7 +27,6 @@ export default function EditCategory() {
 
   const fetchCategory = async () => {
     try {
-      const id = router.query.id as string
       const categoryData = await getCategoryById(id)
       if (categoryData) {
         setCategory(categoryData)
@@ -78,6 +79,11 @@ export default function EditCategory() {
     e.preventDefault()
 
     if (!validateForm()) return
+
+    if (!category) {
+      alert('Category not found. Please try again.')
+      return
+    }
 
     setSaving(true)
     try {
