@@ -6,8 +6,13 @@ import Image from 'next/image'
 import Container from '@/components/layout/Container'
 import { getSiteSettings } from '@/lib/firebase-helpers'
 
+interface HeroSettings {
+  heroBanner: string
+  heroOpacity: number
+}
+
 export default function HomePage() {
-  const [siteSettings, setSiteSettings] = useState({
+  const [siteSettings, setSiteSettings] = useState<HeroSettings>({
     heroBanner: '',
     heroOpacity: 50,
   })
@@ -20,7 +25,12 @@ export default function HomePage() {
   const fetchSettings = async () => {
     try {
       const settings = await getSiteSettings()
-      setSiteSettings(settings)
+      if (settings) {
+        setSiteSettings({
+          heroBanner: (settings as Partial<HeroSettings>).heroBanner || '',
+          heroOpacity: (settings as Partial<HeroSettings>).heroOpacity ?? 50,
+        })
+      }
     } catch (error) {
       console.error('Error fetching site settings:', error)
     } finally {
