@@ -8,24 +8,28 @@ cloudinary.config({
   secure: true,
 })
 
+interface CloudinaryUploadResult {
+  secure_url: string
+  public_id: string
+  width: number
+  height: number
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
-
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
         { status: 400 }
       )
     }
-
     // Convert file to buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-
     // Upload to Cloudinary
-    const result = await new Promise((resolve, reject) => {
+    const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
           resource_type: 'image',
@@ -37,11 +41,10 @@ export async function POST(request: NextRequest) {
         },
         (error, result) => {
           if (error) reject(error)
-          else resolve(result)
+          else resolve(result as CloudinaryUploadResult)
         }
       ).end(buffer)
     })
-
     return NextResponse.json({
       success: true,
       url: result.secure_url,
