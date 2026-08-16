@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createCategory } from '@/lib/firebase-helpers'
 
 export default function NewCategory() {
