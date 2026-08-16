@@ -1,13 +1,15 @@
 'use client'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Editor } from '@tinymce/tinymce-react'
 import { getPostById, updatePost, getAllCategories } from '@/lib/firebase-helpers'
 import type { BlogPost, Category } from '@/types'
 
 export default function EditBlogPost() {
   const router = useRouter()
+  const params = useParams()
+  const id = params.id as string
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -36,7 +38,6 @@ export default function EditBlogPost() {
 
   const fetchPost = async () => {
     try {
-      const id = router.query.id as string
       const postData = await getPostById(id)
       if (postData) {
         setPost(postData)
@@ -143,6 +144,11 @@ export default function EditBlogPost() {
     e.preventDefault()
 
     if (!validateForm()) return
+
+    if (!post) {
+      alert('Post not found. Please try again.')
+      return
+    }
 
     setSaving(true)
     try {
@@ -295,7 +301,7 @@ export default function EditBlogPost() {
             Content *
           </label>
           <Editor
-            apiKey="your-tinymce-api-key"
+            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
             initialValue={formData.content}
             onEditorChange={(content) => {
               setFormData(prev => ({ ...prev, content }))
